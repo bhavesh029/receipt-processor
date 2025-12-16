@@ -1,0 +1,40 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model ReceiptFile {
+  id             String   @id @default(uuid())
+  file_name      String
+  file_path      String
+  // We store the SHA-256 hash to detect exact duplicates instantly
+  file_hash      String   @unique 
+  is_valid       Boolean  @default(false)
+  invalid_reason String?
+  is_processed   Boolean  @default(false)
+  
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  receipt        Receipt? // Relation (One-to-One)
+}
+
+model Receipt {
+  id             String      @id @default(uuid())
+  purchased_at   DateTime?   // Extracted Date
+  merchant_name  String?     // Extracted Merchant
+  total_amount   Float?      // Extracted Total
+  
+  // Link back to the file
+  receipt_file_id String     @unique
+  receipt_file    ReceiptFile @relation(fields: [receipt_file_id], references: [id])
+  
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+}
