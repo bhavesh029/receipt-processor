@@ -10,7 +10,7 @@ async function bootstrap() {
     .setTitle('Receipt Processor API')
     .setDescription('API for uploading and analyzing receipts using AI')
     .setVersion('1.0')
-    .addTag('Receipts') // Optional: categorizes endpoints
+    .addTag('Receipts')
     .build();
 
   // 2. Create the document

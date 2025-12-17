@@ -1,36 +1,32 @@
-import { Controller, Post, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Param, UseInterceptors, UploadedFile, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ReceiptService } from './receipt.service';
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { Body } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { ReceiptService } from './receipt.service';
 import { ValidateReceiptDto } from './dto/validate-receipt.dto';
 import { ProcessReceiptDto } from './dto/process-receipt.dto';
-import { Get, Param } from '@nestjs/common';
 
-
-@Controller('upload') // Requirement says /upload
+@ApiTags('Receipts')
+@Controller() 
 export class ReceiptController {
   constructor(private readonly receiptService: ReceiptService) {}
 
-  @Post()
-  @ApiOperation({ summary: 'Upload a receipt PDF' }) // Adds a title
-  @ApiConsumes('multipart/form-data') // Tells Swagger this is a file upload
+  // 1. Upload Endpoint
+  @Post('upload')
+  @ApiOperation({ summary: 'Upload a receipt PDF' })
+  @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
       type: 'object',
       properties: {
-        file: {
-          type: 'string',
-          format: 'binary', // This adds the "Choose File" button
-        },
+        file: { type: 'string', format: 'binary' },
       },
     },
   })
   @UseInterceptors(FileInterceptor('file', {
     storage: diskStorage({
-      destination: './uploads', // Make sure this folder exists!
+      destination: './uploads',
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         cb(null, `${file.fieldname}-${uniqueSuffix}${extname(file.originalname)}`);
@@ -44,31 +40,33 @@ export class ReceiptController {
     },
   }))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
-    // Call service to save metadata and check duplicates
+    if (!file) throw new BadRequestException('File is required');
     return this.receiptService.handleUpload(file);
   }
 
-  @Post('validate')
+  // 2. Validate Endpoint
+  @Post('validate') // Assignment requires /validate
+  @ApiOperation({ summary: 'Validate PDF integrity' })
   async validateFile(@Body() body: ValidateReceiptDto) {
     return this.receiptService.validateReceipt(body.id);
   }
 
-  @Post('process')
+  // 3. Process Endpoint
+  @Post('process') // Assignment requires /process
   @ApiOperation({ summary: 'Extract data using AI' })
   async processFile(@Body() body: ProcessReceiptDto) {
     return this.receiptService.processReceipt(body.id);
   }
 
-  @Get()
+  // 4. List Receipts
+  @Get('receipts') // Assignment requires /receipts (PLURAL)
   @ApiOperation({ summary: 'List all processed receipts' })
   async findAll() {
     return this.receiptService.findAll();
   }
 
-  @Get(':id')
+  // 5. Get Single Receipt
+  @Get('receipts/:id')
   @ApiOperation({ summary: 'Get a specific receipt by ID' })
   async findOne(@Param('id') id: string) {
     return this.receiptService.findOne(id);

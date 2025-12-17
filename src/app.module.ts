@@ -1,12 +1,19 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { PrismaService } from './prisma/prisma.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { ConfigModule } from '@nestjs/config';
 import { ReceiptModule } from './receipt/receipt.module';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
-  imports: [ReceiptModule],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  imports: [
+    ConfigModule.forRoot(),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
+    ReceiptModule,
+  ],
+  controllers: [],
+  providers: [PrismaService],
 })
 export class AppModule {}

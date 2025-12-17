@@ -39,7 +39,7 @@ export class ReceiptService {
         file_name: file.originalname,
         file_path: file.path,
         file_hash: hexHash,
-        is_valid: true, // We did basic mime-check in controller
+        is_valid: true,
       },
     });
 
@@ -131,8 +131,6 @@ export class ReceiptService {
 
       const response = await result.response;
       let text = response.text();
-
-      // Clean up potential markdown code blocks (```json ... ```)
       text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
       const extractedData = JSON.parse(text);
@@ -166,7 +164,7 @@ export class ReceiptService {
   async findAll() {
     return this.prisma.receipt.findMany({
       include: {
-        receipt_file: true, // Optional: Include file metadata if you want
+        receipt_file: true,
       },
     });
   }
