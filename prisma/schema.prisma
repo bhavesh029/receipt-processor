@@ -30,6 +30,7 @@ model Receipt {
   purchased_at   DateTime?   // Extracted Date
   merchant_name  String?     // Extracted Merchant
   total_amount   Float?      // Extracted Total
+  file_path      String
   
   // Link back to the file
   receipt_file_id String     @unique
