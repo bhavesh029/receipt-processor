@@ -24,19 +24,19 @@ A robust full-stack application that extracts structured data (Merchant, Date, T
     cd receipt-processor
     ```
 
-2.  **One-Click Setup**
-    This command installs dependencies, generates the Prisma client, and initializes the database.
-    ```bash
-    npm run setup
-    ```
-
-3.  **Environment Configuration**
+2.  **Environment Configuration**
     Create a `.env` file in the root directory:
     ```env
     DATABASE_URL="file:./dev.db"
     GEMINI_API_KEY="YOUR_GOOGLE_GEMINI_KEY"
     ```
     *(Get a free key here: https://aistudio.google.com/app/apikey)*
+
+3.  **One-Click Setup**
+    This command installs dependencies, generates the Prisma client, and initializes the database.
+    ```bash
+    npm run setup
+    ```
 
 4.  **Run the Server**
     ```bash
