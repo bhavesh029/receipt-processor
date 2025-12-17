@@ -7,6 +7,8 @@ import { Body } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { ValidateReceiptDto } from './dto/validate-receipt.dto';
 import { ProcessReceiptDto } from './dto/process-receipt.dto';
+import { Get, Param } from '@nestjs/common';
+
 
 @Controller('upload') // Requirement says /upload
 export class ReceiptController {
@@ -58,5 +60,17 @@ export class ReceiptController {
   @ApiOperation({ summary: 'Extract data using AI' })
   async processFile(@Body() body: ProcessReceiptDto) {
     return this.receiptService.processReceipt(body.id);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'List all processed receipts' })
+  async findAll() {
+    return this.receiptService.findAll();
+  }
+
+  @Get(':id')
+  @ApiOperation({ summary: 'Get a specific receipt by ID' })
+  async findOne(@Param('id') id: string) {
+    return this.receiptService.findOne(id);
   }
 }

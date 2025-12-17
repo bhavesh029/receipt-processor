@@ -161,4 +161,28 @@ export class ReceiptService {
       throw new BadRequestException('Failed to process receipt with AI');
     }
   }
+
+  // Get all receipts
+  async findAll() {
+    return this.prisma.receipt.findMany({
+      include: {
+        receipt_file: true, // Optional: Include file metadata if you want
+      },
+    });
+  }
+
+  // Get one receipt by ID
+  async findOne(id: string) {
+    const receipt = await this.prisma.receipt.findUnique({
+      where: { id },
+      include: {
+        receipt_file: true,
+      },
+    });
+
+    if (!receipt) {
+      throw new BadRequestException('Receipt not found');
+    }
+    return receipt;
+  }
 }
